@@ -103,7 +103,9 @@
             
             // Ljud
             function playAudio() {
-                document.getElementById("earthSounds").play().catch(e => console.log("Autoplay blockerad"));
+                const earthAudio = document.getElementById("earthSounds");
+earthAudio.volume = 0.2; // Reduce volume by 80%
+earthAudio.play().catch(e => console.log("Autoplay blockerad"));
                 document.getElementById("spaceMusic").play().catch(e => console.log("Autoplay blockerad"));
                 document.getElementById("lowFreqNoise").play().catch(e => console.log("Autoplay blockerad"));
             }
@@ -125,7 +127,7 @@
             function animate() {
                 requestAnimationFrame(animate);
                 if (idleRotation) {
-                    earth.rotation.y += 0.0005;
+                    earth.rotation.y += 0.00025;
                     targetCameraAngle += 0.0014;
                     cameraAngle += (targetCameraAngle - cameraAngle) * 0.02;
                     camera.position.lerpVectors(camera.position, originalCameraPosition, 0.02);
