@@ -15,13 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop>
-        <source src="earth-sounds.mp3?v=6" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=7" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop>
-        <source src="SPACE-music.mp3?v=6" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=7" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop>
-        <source src="low-frequency-noise.mp3?v=6" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=7" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -58,7 +58,7 @@
             });
 
             // Ljus
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
             scene.add(ambientLight);
 
             const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -73,10 +73,10 @@
             sun.position.set(50, 10, -100);
             scene.add(sun);
 
-            // Stjärnor (100 gånger fler, totalt 20 000 000)
+            // Stjärnor (sänkt till 2 miljoner för bättre prestanda)
             const starGeometry = new THREE.BufferGeometry();
             const starVertices = [];
-            for (let i = 0; i < 20000000; i++) {
+            for (let i = 0; i < 2000000; i++) {
                 let x = (Math.random() - 0.5) * 32000;
                 let y = (Math.random() - 0.5) * 32000;
                 let z = (Math.random() - 0.5) * 32000;
@@ -97,6 +97,8 @@
             textureLoader.load("terran-planet-10-4k-3d-model-120093bfa2.jpg", function (texture) {
                 earthMaterial.map = texture;
                 earthMaterial.needsUpdate = true;
+            }, undefined, function () {
+                console.error("Kunde inte ladda jordens textur.");
             });
             
             function animate() {
