@@ -24,13 +24,13 @@
         <source src="low-frequency-noise.mp3?v=18" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
-    <input type="file" id="textureInput" accept="image/*">
+    
     
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let scene = new THREE.Scene();
             let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-            let cameraRadius = 5;
+              let cameraRadius = 5;
             let cameraAngle = 0;
             let idleRotation = true;
             let targetCameraAngle = 0;
