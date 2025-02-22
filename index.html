@@ -15,13 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop>
-        <source src="earth-sounds.mp3?v=5" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=6" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop>
-        <source src="SPACE-music.mp3?v=5" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=6" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop>
-        <source src="low-frequency-noise.mp3?v=5" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=6" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -29,9 +29,10 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let scene = new THREE.Scene();
-            let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000); // Justerat FOV till 50
+            let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
             let cameraRadius = 5;
             let cameraAngle = 0;
+            let idleRotation = true;
             camera.position.set(cameraRadius, 2, 0);
 
             let renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -46,8 +47,15 @@
             controls.screenSpacePanning = false;
             controls.minPolarAngle = 0;
             controls.maxPolarAngle = Math.PI;
+            controls.minAzimuthAngle = -Infinity;
+            controls.maxAzimuthAngle = Infinity;
             controls.target.set(0, 0, 0);
             controls.update();
+
+            controls.addEventListener('start', () => { idleRotation = false; });
+            controls.addEventListener('end', () => {
+                setTimeout(() => { idleRotation = true; }, 5000);
+            });
 
             // Ljus
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -65,10 +73,10 @@
             sun.position.set(50, 10, -100);
             scene.add(sun);
 
-            // Stjärnor (10 gånger fler, totalt 2 000 000)
+            // Stjärnor (100 gånger fler, totalt 20 000 000)
             const starGeometry = new THREE.BufferGeometry();
             const starVertices = [];
-            for (let i = 0; i < 2000000; i++) {
+            for (let i = 0; i < 20000000; i++) {
                 let x = (Math.random() - 0.5) * 32000;
                 let y = (Math.random() - 0.5) * 32000;
                 let z = (Math.random() - 0.5) * 32000;
@@ -91,27 +99,15 @@
                 earthMaterial.needsUpdate = true;
             });
             
-            document.getElementById("textureInput").addEventListener("change", function (event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        new THREE.TextureLoader().load(e.target.result, function(texture) {
-                            earthMaterial.map = texture;
-                            earthMaterial.needsUpdate = true;
-                        });
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-            
             function animate() {
                 requestAnimationFrame(animate);
-                earth.rotation.y -= 0.0005;
-                cameraAngle += 0.0005;
-                camera.position.x = Math.cos(cameraAngle) * cameraRadius;
-                camera.position.z = Math.sin(cameraAngle) * cameraRadius;
-                camera.lookAt(earth.position);
+                if (idleRotation) {
+                    earth.rotation.y -= 0.0005;
+                    cameraAngle += 0.0005;
+                    camera.position.x = Math.cos(cameraAngle) * cameraRadius;
+                    camera.position.z = Math.sin(cameraAngle) * cameraRadius;
+                    camera.lookAt(earth.position);
+                }
                 controls.update();
                 renderer.render(scene, camera);
             }
