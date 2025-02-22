@@ -44,8 +44,10 @@
             controls.enableZoom = true;
             controls.enableRotate = true;
             controls.enablePan = true;
-            controls.screenSpacePanning = false; // Möjliggör panorering i sidled
-            controls.maxPolarAngle = Math.PI; // Möjliggör full rotation
+            controls.screenSpacePanning = true; // Möjliggör panorering i sidled
+            controls.minPolarAngle = 0; // Tillåter full rotation nedåt
+            controls.maxPolarAngle = Math.PI; // Tillåter full rotation uppåt
+            controls.enableKeys = true; // Möjliggör tangentbordsstyrning
 
             // Ljus
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
