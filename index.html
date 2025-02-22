@@ -44,6 +44,8 @@
             controls.enableZoom = true;
             controls.enableRotate = true;
             controls.enablePan = true;
+            controls.screenSpacePanning = false; // Möjliggör panorering i sidled
+            controls.maxPolarAngle = Math.PI; // Möjliggör full rotation
 
             // Ljus
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -102,9 +104,9 @@
             const audioButton = document.getElementById("toggleAudio");
             let isPlaying = true;
 
-            audioElement.volume = 0.3; // Sänkt ytterligare 20%
+            audioElement.volume = 0.3;
             spaceMusic.volume = 0.5;
-            lowFreqNoise.volume = 0.2; // Lågfrekvent brus på låg nivå
+            lowFreqNoise.volume = 0.2;
             audioElement.play();
             spaceMusic.play();
             lowFreqNoise.play();
