@@ -13,17 +13,17 @@
     </style>
 </head>
 <body>
-    <audio id="earthSounds" loop>
+    <audio id="earthSounds" loop autoplay>
         <source src="earth-sounds.mp3" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
-    <button id="playAudio">Spela ljud</button>
-
+    <button id="toggleAudio">Stäng av ljud</button>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let scene = new THREE.Scene();
             let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 5);
+            camera.position.set(0, 3, 7); // Zoomad ut mer
 
             let renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -31,6 +31,8 @@
 
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
+            controls.enableZoom = false;
+            controls.enableRotate = false;
 
             // Ljus
             const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -58,6 +60,9 @@
                 function animate() {
                     requestAnimationFrame(animate);
                     earth.rotation.y += 0.0005; // Långsam rotation
+                    camera.position.x = Math.sin(Date.now() * 0.00005) * 7; // Kamerans rotation runt jorden
+                    camera.position.z = Math.cos(Date.now() * 0.00005) * 7;
+                    camera.lookAt(earth.position);
                     renderer.render(scene, camera);
                 }
                 animate();
@@ -77,15 +82,20 @@
             const stars = new THREE.Points(starGeometry, starMaterial);
             scene.add(stars);
 
-            // Ljuduppspelning
+            // Ljuduppspelning med toggling
             const audioElement = document.getElementById("earthSounds");
-            document.getElementById("playAudio").addEventListener("click", () => {
-                audioElement.volume = 0.3;
-                audioElement.play().then(() => {
-                    console.log("Ljudet spelar");
-                }).catch(error => {
-                    console.error("Ljudet kunde inte spelas upp: ", error);
-                });
+            const audioButton = document.getElementById("toggleAudio");
+            let isPlaying = true;
+
+            audioButton.addEventListener("click", () => {
+                if (isPlaying) {
+                    audioElement.pause();
+                    audioButton.innerText = "Spela ljud";
+                } else {
+                    audioElement.play();
+                    audioButton.innerText = "Stäng av ljud";
+                }
+                isPlaying = !isPlaying;
             });
 
             window.addEventListener("resize", () => {
