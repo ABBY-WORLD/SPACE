@@ -15,15 +15,15 @@
 </head>
 <body>
     <audio id="earthSounds" loop autoplay>
-        <source src="earth-sounds.mp3" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=2" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
     <audio id="spaceMusic" loop autoplay>
-        <source src="SPACE-music.mp3" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=2" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
     <audio id="lowFreqNoise" loop autoplay>
-        <source src="low-frequency-noise.mp3" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=2" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
@@ -33,7 +33,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             let scene = new THREE.Scene();
             let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 2, 5.5);
+            camera.position.set(0, 2, 2.75);
 
             let renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -44,30 +44,34 @@
             controls.enableZoom = true;
             controls.enableRotate = true;
             controls.enablePan = true;
-            controls.screenSpacePanning = true;
+            controls.screenSpacePanning = false;
             controls.minPolarAngle = 0;
             controls.maxPolarAngle = Math.PI;
             controls.minAzimuthAngle = -Infinity;
             controls.maxAzimuthAngle = Infinity;
 
             // Ljus
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambientLight);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-            directionalLight.position.set(5, 3, 5).normalize();
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directionalLight.position.set(10, 5, -20);
             scene.add(directionalLight);
+
+            // Solen
+            const sunGeometry = new THREE.SphereGeometry(3, 64, 64);
+            const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffcc00 });
+            const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            sun.position.set(50, 10, -100);
+            scene.add(sun);
 
             // Ladda och applicera textur på sfär
             const textureLoader = new THREE.TextureLoader();
             let earthMaterial;
             const earthGeometry = new THREE.SphereGeometry(1, 256, 256);
             textureLoader.load("terran-planet-10-4k-3d-model-120093bfa2.jpg", function (texture) {
-                console.log("Texture loaded successfully");
                 earthMaterial = new THREE.MeshStandardMaterial({ map: texture });
                 startRendering();
-            }, undefined, function (error) {
-                console.error("Error loading texture:", error);
             });
 
             function startRendering() {
@@ -77,26 +81,37 @@
                 function animate() {
                     requestAnimationFrame(animate);
                     earth.rotation.y -= 0.0003;
-                    camera.position.x = Math.sin(Date.now() * 0.00005) * 5.5;
-                    camera.position.z = Math.cos(Date.now() * 0.00005) * 5.5;
-                    camera.lookAt(earth.position);
                     controls.update();
                     renderer.render(scene, camera);
                 }
                 animate();
             }
 
-            // Stjärnfält
+            // Ladda textur från användarens hårddisk
+            document.getElementById("textureInput").addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const newTexture = textureLoader.load(e.target.result);
+                        earthMaterial.map = newTexture;
+                        earthMaterial.needsUpdate = true;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Stjärnfält med fler stjärnor
             const starGeometry = new THREE.BufferGeometry();
             const starVertices = [];
-            for (let i = 0; i < 20000; i++) {
-                let x = (Math.random() - 0.5) * 8000;
-                let y = (Math.random() - 0.5) * 8000;
-                let z = (Math.random() - 0.5) * 8000;
+            for (let i = 0; i < 50000; i++) { // Ökat antal stjärnor
+                let x = (Math.random() - 0.5) * 16000;
+                let y = (Math.random() - 0.5) * 16000;
+                let z = (Math.random() - 0.5) * 16000;
                 starVertices.push(x, y, z);
             }
             starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3 });
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
             const stars = new THREE.Points(starGeometry, starMaterial);
             scene.add(stars);
 
