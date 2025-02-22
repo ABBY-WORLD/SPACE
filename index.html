@@ -15,13 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop>
-        <source src="earth-sounds.mp3?v=15" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=17" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop>
-        <source src="SPACE-music.mp3?v=15" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=17" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop>
-        <source src="low-frequency-noise.mp3?v=15" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=17" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -114,10 +114,23 @@
             scene.add(moonPivot);
             moon.position.set(moonDistance, 0, 0);
 
+            document.getElementById("textureInput").addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const newTexture = new THREE.TextureLoader().load(e.target.result);
+                        earthMaterial.map = newTexture;
+                        earthMaterial.needsUpdate = true;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
             function animate() {
                 requestAnimationFrame(animate);
                 if (idleRotation) {
-                    earth.rotation.y += 0.001; // Increased speed and reversed direction
+                    earth.rotation.y += 0.0005;
                     targetCameraAngle += 0.0014;
                     cameraAngle += (targetCameraAngle - cameraAngle) * 0.02;
                     camera.position.lerpVectors(camera.position, originalCameraPosition, 0.02);
