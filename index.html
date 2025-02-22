@@ -15,13 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop>
-        <source src="earth-sounds.mp3?v=17" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=18" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop>
-        <source src="SPACE-music.mp3?v=17" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=18" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop>
-        <source src="low-frequency-noise.mp3?v=17" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=18" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -101,6 +101,14 @@
                 earthMaterial.needsUpdate = true;
             });
             
+            // Ljud
+            function playAudio() {
+                document.getElementById("earthSounds").play().catch(e => console.log("Autoplay blockerad"));
+                document.getElementById("spaceMusic").play().catch(e => console.log("Autoplay blockerad"));
+                document.getElementById("lowFreqNoise").play().catch(e => console.log("Autoplay blockerad"));
+            }
+            window.addEventListener("click", playAudio, { once: true });
+
             // Månen
             const moonRadius = 0.273; // Moon's size relative to Earth
             const moonDistance = 30; // Distance from Earth in scaled units
@@ -113,19 +121,6 @@
             moonPivot.add(moon);
             scene.add(moonPivot);
             moon.position.set(moonDistance, 0, 0);
-
-            document.getElementById("textureInput").addEventListener("change", function (event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const newTexture = new THREE.TextureLoader().load(e.target.result);
-                        earthMaterial.map = newTexture;
-                        earthMaterial.needsUpdate = true;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
 
             function animate() {
                 requestAnimationFrame(animate);
