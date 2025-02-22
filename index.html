@@ -15,13 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop>
-        <source src="earth-sounds.mp3?v=12" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=13" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop>
-        <source src="SPACE-music.mp3?v=12" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=13" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop>
-        <source src="low-frequency-noise.mp3?v=12" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=13" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -123,6 +123,9 @@
                     camera.position.lerpVectors(camera.position, originalCameraPosition, 0.02);
                     camera.lookAt(earth.position);
                     moonPivot.rotation.y += 0.001; // Moon's orbit
+                    cameraAngle += 0.0005; // Restore camera rotation
+                    camera.position.x = Math.cos(cameraAngle) * cameraRadius;
+                    camera.position.z = Math.sin(cameraAngle) * cameraRadius;
                 }
                 controls.update();
                 renderer.render(scene, camera);
