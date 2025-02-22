@@ -14,19 +14,19 @@
     </style>
 </head>
 <body>
-    <audio id="earthSounds" loop>
+    <audio id="earthSounds" loop autoplay>
         <source src="earth-sounds.mp3" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
-    <audio id="spaceMusic" loop>
+    <audio id="spaceMusic" loop autoplay>
         <source src="SPACE-music.mp3" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
-    <audio id="lowFreqNoise" loop>
+    <audio id="lowFreqNoise" loop autoplay>
         <source src="low-frequency-noise.mp3" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
-    <button id="toggleAudio">Spela ljud</button>
+    <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
     
     <script>
@@ -100,24 +100,14 @@
             const spaceMusic = document.getElementById("spaceMusic");
             const lowFreqNoise = document.getElementById("lowFreqNoise");
             const audioButton = document.getElementById("toggleAudio");
-            let isPlaying = false;
+            let isPlaying = true;
 
-            function playAudio() {
-                audioElement.volume = 0.3; // Sänkt ytterligare 20%
-                spaceMusic.volume = 0.5;
-                lowFreqNoise.volume = 0.2; // Lågfrekvent brus på låg nivå
-                audioElement.play();
-                spaceMusic.play();
-                lowFreqNoise.play();
-                isPlaying = true;
-                audioButton.innerText = "Stäng av ljud";
-            }
-
-            window.addEventListener("click", function () {
-                if (!isPlaying) {
-                    playAudio();
-                }
-            }, { once: true });
+            audioElement.volume = 0.3; // Sänkt ytterligare 20%
+            spaceMusic.volume = 0.5;
+            lowFreqNoise.volume = 0.2; // Lågfrekvent brus på låg nivå
+            audioElement.play();
+            spaceMusic.play();
+            lowFreqNoise.play();
 
             audioButton.addEventListener("click", () => {
                 if (isPlaying) {
@@ -126,7 +116,10 @@
                     lowFreqNoise.pause();
                     audioButton.innerText = "Spela ljud";
                 } else {
-                    playAudio();
+                    audioElement.play();
+                    spaceMusic.play();
+                    lowFreqNoise.play();
+                    audioButton.innerText = "Stäng av ljud";
                 }
                 isPlaying = !isPlaying;
             });
