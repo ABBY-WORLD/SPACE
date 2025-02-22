@@ -14,15 +14,15 @@
     </style>
 </head>
 <body>
-    <audio id="earthSounds" loop>
+    <audio id="earthSounds" loop autoplay>
         <source src="earth-sounds.mp3?v=2" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
-    <audio id="spaceMusic" loop>
+    <audio id="spaceMusic" loop autoplay>
         <source src="SPACE-music.mp3?v=2" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
-    <audio id="lowFreqNoise" loop>
+    <audio id="lowFreqNoise" loop autoplay>
         <source src="low-frequency-noise.mp3?v=2" type="audio/mpeg">
         Din webbläsare stöder inte ljuduppspelning.
     </audio>
@@ -33,7 +33,7 @@
         document.addEventListener("DOMContentLoaded", function () {
             let scene = new THREE.Scene();
             let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            let cameraRadius = 3.5;
+            let cameraRadius = 5;
             let cameraAngle = 0;
             camera.position.set(cameraRadius, 2, 0);
 
@@ -52,12 +52,6 @@
             controls.minAzimuthAngle = -Infinity;
             controls.maxAzimuthAngle = Infinity;
 
-            let idleRotation = true;
-            controls.addEventListener('start', () => { idleRotation = false; });
-            controls.addEventListener('end', () => {
-                setTimeout(() => { idleRotation = true; }, 5000);
-            });
-
             // Ljus
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambientLight);
@@ -74,11 +68,24 @@
             sun.position.set(50, 10, -100);
             scene.add(sun);
 
+            // Stjärnor
+            const starGeometry = new THREE.BufferGeometry();
+            const starVertices = [];
+            for (let i = 0; i < 50000; i++) {
+                let x = (Math.random() - 0.5) * 16000;
+                let y = (Math.random() - 0.5) * 16000;
+                let z = (Math.random() - 0.5) * 16000;
+                starVertices.push(x, y, z);
+            }
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
+            const stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+
             // Ladda och applicera textur på jorden
             const textureLoader = new THREE.TextureLoader();
-            let earthMaterial;
+            let earthMaterial = new THREE.MeshStandardMaterial();
             const earthGeometry = new THREE.SphereGeometry(1, 256, 256);
-            earthMaterial = new THREE.MeshStandardMaterial();
             let earth = new THREE.Mesh(earthGeometry, earthMaterial);
             scene.add(earth);
 
@@ -87,76 +94,17 @@
                 earthMaterial.needsUpdate = true;
             });
 
-            // Tillåt att byta textur från hårddisken
-            document.getElementById("textureInput").addEventListener("change", function (event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const newTexture = textureLoader.load(e.target.result, function(texture) {
-                            earthMaterial.map = texture;
-                            earthMaterial.needsUpdate = true;
-                        });
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
             function animate() {
                 requestAnimationFrame(animate);
-                if (idleRotation) {
-                    earth.rotation.y -= 0.0003;
-                    cameraAngle += 0.0003;
-                    camera.position.x = Math.cos(cameraAngle) * cameraRadius;
-                    camera.position.z = Math.sin(cameraAngle) * cameraRadius;
-                    camera.lookAt(earth.position);
-                }
+                earth.rotation.y -= 0.0005;
+                cameraAngle += 0.0005;
+                camera.position.x = Math.cos(cameraAngle) * cameraRadius;
+                camera.position.z = Math.sin(cameraAngle) * cameraRadius;
+                camera.lookAt(earth.position);
                 controls.update();
                 renderer.render(scene, camera);
             }
             animate();
-
-            // Ljuduppspelning direkt
-            const audioElement = document.getElementById("earthSounds");
-            const spaceMusic = document.getElementById("spaceMusic");
-            const lowFreqNoise = document.getElementById("lowFreqNoise");
-            const audioButton = document.getElementById("toggleAudio");
-            let isPlaying = true;
-
-            audioElement.volume = 0.2;
-            spaceMusic.volume = 0.5;
-            lowFreqNoise.volume = 0.2;
-            
-            function playAudio() {
-                audioElement.play();
-                spaceMusic.play();
-                lowFreqNoise.play();
-            }
-            
-            window.addEventListener("click", function () {
-                playAudio();
-            }, { once: true });
-            
-            playAudio();
-
-            audioButton.addEventListener("click", () => {
-                if (isPlaying) {
-                    audioElement.pause();
-                    spaceMusic.pause();
-                    lowFreqNoise.pause();
-                    audioButton.innerText = "Spela ljud";
-                } else {
-                    playAudio();
-                    audioButton.innerText = "Stäng av ljud";
-                }
-                isPlaying = !isPlaying;
-            });
-
-            window.addEventListener("resize", () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
         });
     </script>
 </body>
