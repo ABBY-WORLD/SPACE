@@ -15,16 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop autoplay>
-        <source src="earth-sounds.mp3?v=2" type="audio/mpeg">
-        Din webbläsare stöder inte ljuduppspelning.
+        <source src="earth-sounds.mp3?v=3" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop autoplay>
-        <source src="SPACE-music.mp3?v=2" type="audio/mpeg">
-        Din webbläsare stöder inte ljuduppspelning.
+        <source src="SPACE-music.mp3?v=3" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop autoplay>
-        <source src="low-frequency-noise.mp3?v=2" type="audio/mpeg">
-        Din webbläsare stöder inte ljuduppspelning.
+        <source src="low-frequency-noise.mp3?v=3" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -46,7 +43,7 @@
             controls.enableZoom = true;
             controls.enableRotate = true;
             controls.enablePan = true;
-            controls.screenSpacePanning = false;
+            controls.screenSpacePanning = true;
             controls.minPolarAngle = 0;
             controls.maxPolarAngle = Math.PI;
             controls.minAzimuthAngle = -Infinity;
@@ -105,6 +102,33 @@
                 renderer.render(scene, camera);
             }
             animate();
+
+            // Ljuduppspelning
+            const audioElement = document.getElementById("earthSounds");
+            const spaceMusic = document.getElementById("spaceMusic");
+            const lowFreqNoise = document.getElementById("lowFreqNoise");
+            const audioButton = document.getElementById("toggleAudio");
+            let isPlaying = true;
+
+            function playAudio() {
+                audioElement.play();
+                spaceMusic.play();
+                lowFreqNoise.play();
+            }
+            playAudio();
+
+            audioButton.addEventListener("click", () => {
+                if (isPlaying) {
+                    audioElement.pause();
+                    spaceMusic.pause();
+                    lowFreqNoise.pause();
+                    audioButton.innerText = "Spela ljud";
+                } else {
+                    playAudio();
+                    audioButton.innerText = "Stäng av ljud";
+                }
+                isPlaying = !isPlaying;
+            });
         });
     </script>
 </body>
