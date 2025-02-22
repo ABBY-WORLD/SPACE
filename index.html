@@ -15,13 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop>
-        <source src="earth-sounds.mp3?v=8" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=9" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop>
-        <source src="SPACE-music.mp3?v=8" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=9" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop>
-        <source src="low-frequency-noise.mp3?v=8" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=9" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -74,6 +74,20 @@
             sun.position.set(50, 10, -100);
             scene.add(sun);
 
+            // Stjärnor (återställda till 2 miljoner)
+            const starGeometry = new THREE.BufferGeometry();
+            const starVertices = [];
+            for (let i = 0; i < 2000000; i++) {
+                let x = (Math.random() - 0.5) * 32000;
+                let y = (Math.random() - 0.5) * 32000;
+                let z = (Math.random() - 0.5) * 32000;
+                starVertices.push(x, y, z);
+            }
+            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
+            const stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+
             // Jorden
             const textureLoader = new THREE.TextureLoader();
             const earthGeometry = new THREE.SphereGeometry(1, 256, 256);
@@ -84,16 +98,14 @@
             textureLoader.load("terran-planet-10-4k-3d-model-120093bfa2.jpg", function (texture) {
                 earthMaterial.map = texture;
                 earthMaterial.needsUpdate = true;
-            }, undefined, function () {
-                console.error("Kunde inte ladda jordens textur.");
             });
             
             function animate() {
                 requestAnimationFrame(animate);
                 if (idleRotation) {
-                    earth.rotation.y -= 0.0005;
-                    targetCameraAngle += 0.0008; // Ökad hastighet
-                    cameraAngle += (targetCameraAngle - cameraAngle) * 0.02; // Mjuk återgång
+                    earth.rotation.y -= 0.001; // Snabbare rotation av jorden
+                    targetCameraAngle += 0.002; // Snabbare återgång
+                    cameraAngle += (targetCameraAngle - cameraAngle) * 0.05; // Mjukare animering
                     camera.position.x = Math.cos(cameraAngle) * cameraRadius;
                     camera.position.z = Math.sin(cameraAngle) * cameraRadius;
                     camera.lookAt(earth.position);
