@@ -25,7 +25,7 @@
             bottom: 10%;
             left: 50%;
             transform: translateX(-50%);
-            width: auto;
+            width: 50%;
             height: auto;
             z-index: 10;
         }
@@ -126,13 +126,21 @@
                     earth.rotation.y += 0.0005;
                     targetCameraAngle += 0.0014;
                     cameraAngle += (targetCameraAngle - cameraAngle) * 0.02;
-                    camera.position.lerpVectors(camera.position, originalCameraPosition, 0.02);
+                    camera.position.x = Math.cos(cameraAngle) * cameraRadius;
+                    camera.position.z = Math.sin(cameraAngle) * cameraRadius;
                     camera.lookAt(earth.position);
                 }
                 controls.update();
                 renderer.render(scene, camera);
             }
             animate();
+            
+            function playAudio() {
+                document.getElementById("earthSounds").play().catch(e => console.log("Autoplay blockerad"));
+                document.getElementById("spaceMusic").play().catch(e => console.log("Autoplay blockerad"));
+                document.getElementById("lowFreqNoise").play().catch(e => console.log("Autoplay blockerad"));
+            }
+            window.addEventListener("click", playAudio, { once: true });
         });
     </script>
 </body>
