@@ -15,13 +15,13 @@
 </head>
 <body>
     <audio id="earthSounds" loop>
-        <source src="earth-sounds.mp3?v=4" type="audio/mpeg">
+        <source src="earth-sounds.mp3?v=5" type="audio/mpeg">
     </audio>
     <audio id="spaceMusic" loop>
-        <source src="SPACE-music.mp3?v=4" type="audio/mpeg">
+        <source src="SPACE-music.mp3?v=5" type="audio/mpeg">
     </audio>
     <audio id="lowFreqNoise" loop>
-        <source src="low-frequency-noise.mp3?v=4" type="audio/mpeg">
+        <source src="low-frequency-noise.mp3?v=5" type="audio/mpeg">
     </audio>
     <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
@@ -29,7 +29,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             let scene = new THREE.Scene();
-            let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            let camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000); // Justerat FOV till 50
             let cameraRadius = 5;
             let cameraAngle = 0;
             camera.position.set(cameraRadius, 2, 0);
@@ -65,10 +65,10 @@
             sun.position.set(50, 10, -100);
             scene.add(sun);
 
-            // Stjärnor (fördubblad igen)
+            // Stjärnor (10 gånger fler, totalt 2 000 000)
             const starGeometry = new THREE.BufferGeometry();
             const starVertices = [];
-            for (let i = 0; i < 200000; i++) { // Fördubblat igen till 200 000 stjärnor
+            for (let i = 0; i < 2000000; i++) {
                 let x = (Math.random() - 0.5) * 32000;
                 let y = (Math.random() - 0.5) * 32000;
                 let z = (Math.random() - 0.5) * 32000;
@@ -79,18 +79,32 @@
             const stars = new THREE.Points(starGeometry, starMaterial);
             scene.add(stars);
 
-            // Ladda och applicera textur på jorden
+            // Jorden
             const textureLoader = new THREE.TextureLoader();
-            let earthMaterial = new THREE.MeshStandardMaterial();
             const earthGeometry = new THREE.SphereGeometry(1, 256, 256);
+            let earthMaterial = new THREE.MeshStandardMaterial();
             let earth = new THREE.Mesh(earthGeometry, earthMaterial);
             scene.add(earth);
-
+            
             textureLoader.load("terran-planet-10-4k-3d-model-120093bfa2.jpg", function (texture) {
                 earthMaterial.map = texture;
                 earthMaterial.needsUpdate = true;
             });
-
+            
+            document.getElementById("textureInput").addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        new THREE.TextureLoader().load(e.target.result, function(texture) {
+                            earthMaterial.map = texture;
+                            earthMaterial.needsUpdate = true;
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
             function animate() {
                 requestAnimationFrame(animate);
                 earth.rotation.y -= 0.0005;
@@ -102,7 +116,7 @@
                 renderer.render(scene, camera);
             }
             animate();
-
+            
             // Ljuduppspelning direkt vid start
             const audioElement = document.getElementById("earthSounds");
             const spaceMusic = document.getElementById("spaceMusic");
