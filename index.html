@@ -20,6 +20,15 @@
             cursor: pointer;
             font-size: 14px;
         }
+        .awod-image {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            height: auto;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -34,6 +43,7 @@
     </audio>
     
     <button id="toggleSound" class="sound-button">SOUND+-</button>
+    <img src="awod.png" class="awod-image" alt="A World of Difference">
     
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -109,20 +119,7 @@
                 earthMaterial.map = texture;
                 earthMaterial.needsUpdate = true;
             });
-
-            // Månen
-            const moonRadius = 0.273;
-            const moonDistance = 30;
-            const moonGeometry = new THREE.SphereGeometry(moonRadius, 64, 64);
-            const moonMaterial = new THREE.MeshStandardMaterial({
-                map: new THREE.TextureLoader().load("moon_texture.jpg")
-            });
-            const moon = new THREE.Mesh(moonGeometry, moonMaterial);
-            const moonPivot = new THREE.Object3D();
-            moonPivot.add(moon);
-            scene.add(moonPivot);
-            moon.position.set(moonDistance, 0, 0);
-
+            
             function animate() {
                 requestAnimationFrame(animate);
                 if (idleRotation) {
@@ -131,7 +128,6 @@
                     cameraAngle += (targetCameraAngle - cameraAngle) * 0.02;
                     camera.position.lerpVectors(camera.position, originalCameraPosition, 0.02);
                     camera.lookAt(earth.position);
-                    moonPivot.rotation.y += 0.001;
                 }
                 controls.update();
                 renderer.render(scene, camera);
