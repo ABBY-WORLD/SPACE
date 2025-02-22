@@ -14,16 +14,16 @@
     </style>
 </head>
 <body>
-    <audio id="earthSounds" loop autoplay>
-        <source src="earth-sounds.mp3?v=3" type="audio/mpeg">
+    <audio id="earthSounds" loop>
+        <source src="earth-sounds.mp3?v=4" type="audio/mpeg">
     </audio>
-    <audio id="spaceMusic" loop autoplay>
-        <source src="SPACE-music.mp3?v=3" type="audio/mpeg">
+    <audio id="spaceMusic" loop>
+        <source src="SPACE-music.mp3?v=4" type="audio/mpeg">
     </audio>
-    <audio id="lowFreqNoise" loop autoplay>
-        <source src="low-frequency-noise.mp3?v=3" type="audio/mpeg">
+    <audio id="lowFreqNoise" loop>
+        <source src="low-frequency-noise.mp3?v=4" type="audio/mpeg">
     </audio>
-    <button id="toggleAudio">Slå på ljud</button>
+    <button id="toggleAudio">Stäng av ljud</button>
     <input type="file" id="textureInput" accept="image/*">
     
     <script>
@@ -65,13 +65,13 @@
             sun.position.set(50, 10, -100);
             scene.add(sun);
 
-            // Stjärnor (dubbel mängd)
+            // Stjärnor (fördubblad igen)
             const starGeometry = new THREE.BufferGeometry();
             const starVertices = [];
-            for (let i = 0; i < 100000; i++) { // Fördubblat antal stjärnor
-                let x = (Math.random() - 0.5) * 16000;
-                let y = (Math.random() - 0.5) * 16000;
-                let z = (Math.random() - 0.5) * 16000;
+            for (let i = 0; i < 200000; i++) { // Fördubblat igen till 200 000 stjärnor
+                let x = (Math.random() - 0.5) * 32000;
+                let y = (Math.random() - 0.5) * 32000;
+                let z = (Math.random() - 0.5) * 32000;
                 starVertices.push(x, y, z);
             }
             starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
@@ -103,7 +103,7 @@
             }
             animate();
 
-            // Ljuduppspelning
+            // Ljuduppspelning direkt vid start
             const audioElement = document.getElementById("earthSounds");
             const spaceMusic = document.getElementById("spaceMusic");
             const lowFreqNoise = document.getElementById("lowFreqNoise");
@@ -111,10 +111,14 @@
             let isPlaying = true;
 
             function playAudio() {
-                audioElement.play();
-                spaceMusic.play();
-                lowFreqNoise.play();
+                audioElement.play().catch(e => console.log("Autoplay blockerad"));
+                spaceMusic.play().catch(e => console.log("Autoplay blockerad"));
+                lowFreqNoise.play().catch(e => console.log("Autoplay blockerad"));
             }
+            
+            window.addEventListener("click", function () {
+                playAudio();
+            }, { once: true });
             playAudio();
 
             audioButton.addEventListener("click", () => {
