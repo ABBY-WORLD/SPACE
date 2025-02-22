@@ -109,28 +109,19 @@
                 earthMaterial.map = texture;
                 earthMaterial.needsUpdate = true;
             });
-            
-            // Ljudkontroll
-            const toggleSoundButton = document.getElementById("toggleSound");
-            let soundPlaying = false;
-            const sounds = [
-                document.getElementById("earthSounds"),
-                document.getElementById("spaceMusic"),
-                document.getElementById("lowFreqNoise")
-            ];
 
-            function toggleSound() {
-                soundPlaying = !soundPlaying;
-                sounds.forEach(audio => {
-                    if (soundPlaying) {
-                        audio.play();
-                    } else {
-                        audio.pause();
-                    }
-                });
-            }
-
-            toggleSoundButton.addEventListener("click", toggleSound);
+            // Månen
+            const moonRadius = 0.273;
+            const moonDistance = 30;
+            const moonGeometry = new THREE.SphereGeometry(moonRadius, 64, 64);
+            const moonMaterial = new THREE.MeshStandardMaterial({
+                map: new THREE.TextureLoader().load("moon_texture.jpg")
+            });
+            const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            const moonPivot = new THREE.Object3D();
+            moonPivot.add(moon);
+            scene.add(moonPivot);
+            moon.position.set(moonDistance, 0, 0);
 
             function animate() {
                 requestAnimationFrame(animate);
@@ -140,6 +131,7 @@
                     cameraAngle += (targetCameraAngle - cameraAngle) * 0.02;
                     camera.position.lerpVectors(camera.position, originalCameraPosition, 0.02);
                     camera.lookAt(earth.position);
+                    moonPivot.rotation.y += 0.001;
                 }
                 controls.update();
                 renderer.render(scene, camera);
